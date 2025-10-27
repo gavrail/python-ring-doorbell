@@ -45,8 +45,15 @@ async def main() -> None:
 
     await ring.async_update_data()
 
-    print(ring.devices())
-    await auth.async_close()
+    devices = ring.devices()
+    doorbell = devices['doorbots'][0]
+    try:
+        await doorbell.async_recording_download(
+            (await doorbell.async_history(limit=100, kind='ding'))[0]['id'],
+                            filename='last_ding.mp4',
+                            override=True)
+    finally:
+        await auth.async_close()
 
 
 if __name__ == "__main__":

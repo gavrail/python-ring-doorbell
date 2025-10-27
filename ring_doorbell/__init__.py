@@ -2,7 +2,7 @@
 
 from importlib.metadata import version
 
-__version__ = version("ring_doorbell")
+__version__ = "1.0"
 
 from ring_doorbell.auth import Auth
 from ring_doorbell.chime import RingChime
