@@ -39,10 +39,9 @@ class SnapShotter(object):
         self.doorbell = doorbell
 
     def on_event(self, event):
-        if event.kind == "motion":
-            print("Motion detected!", event)
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.doorbell.async_get_snapshot(filename="snapshot.jpg"))
+        print(f"Motion ({event.kind}) detected!")
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.doorbell.async_get_snapshot(filename="snapshot.jpg"))
 
 async def main() -> None:
     if cache_file.is_file():  # auth token is cached
@@ -58,14 +57,14 @@ async def main() -> None:
 
     await ring.async_update_data()
 
-    listener = RingEventListener(ring)
-
-    await listener.start()
-
     devices = ring.devices()
     doorbell = devices['doorbots'][0]
-    await doorbell.async_get_snapshot(filename="snapshot.jpg")
+    snap_shotter = SnapShotter(doorbell)
+    listener = RingEventListener(ring)
+    listener.add_notification_callback(snap_shotter.on_event)
+    await listener.start()
 
+    await asyncio.Event().wait()
     await auth.async_close()
 
 
