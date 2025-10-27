@@ -64,10 +64,7 @@ async def main() -> None:
 
     devices = ring.devices()
     doorbell = devices['doorbots'][0]
-    snap_shotter = SnapShotter(doorbell)
-    listener.add_notification_callback(snap_shotter.on_event)
-
-    await asyncio.Event().wait()
+    await doorbell.async_get_snapshot(filename="snapshot.jpg")
 
     await auth.async_close()
 
